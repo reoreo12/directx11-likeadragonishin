@@ -109,17 +109,11 @@ struct PS_OUT
     float4 vColor : SV_TARGET0;
 };
 
-struct PS_OUT_WEIGHT
-{
-    float4 vAccum : SV_TARGET0;
-    float4 vReveal : SV_TARGET1;
-};
-
 // Pixel Shader
 // µ¥Ä® ¼ÎÀÌ´õ ñé ÀÚ»ó µ¥Ä® ¼ÎÀÌ´õ
-PS_OUT_WEIGHT PS_DECAL_SLASH(PS_IN In)
+PS_OUT PS_DECAL_SLASH(PS_IN In)
 {
-    PS_OUT_WEIGHT Out;
+    PS_OUT Out;
     
     // È­¸é UV º¹¿ø
     float2 vScreenUV = In.vClipPos.xy / In.vClipPos.w * float2(0.5f, -0.5f) + 0.5f;
@@ -186,8 +180,7 @@ PS_OUT_WEIGHT PS_DECAL_SLASH(PS_IN In)
     float fFadeAlpha = saturate(1.f - fLifeRatio);
     vColor.a *= fFadeAlpha;
     
-    Out.vAccum = float4(vColor.rgb * vColor.a, vColor.a);
-    Out.vReveal = vColor.a;
+    Out.vColor = vColor;
     
     return Out;
 }
@@ -200,7 +193,7 @@ technique11 DefaultTechnique
     {
         SetRasterizerState(RS_Cull_None);
         SetDepthStencilState(DSS_NonWriteZ, 0);
-        SetBlendState(BS_Weight, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
+        SetBlendState(BS_Blend, float4(0.f, 0.f, 0.f, 0.f), 0xffffffff);
     
         VertexShader = compile vs_5_0 VS_MAIN();
         GeometryShader = NULL;
